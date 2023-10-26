@@ -2,10 +2,11 @@ package SqueakyClean;
 
 public class SqueakyClean {
     public static void main(String[] args) {
-        System.setProperty("file.encoding", "UTF-8");
         System.out.println(clean("my   Id"));
         System.out.println(clean(" myId "));
         System.out.println(clean("my\0Id"));
+        System.out.println(clean("my\0\r\u007FId"));
+        System.out.println(clean("\r"));
         System.out.println(clean("à-ḃç"));
         System.out.println(clean("a1😀2😀3😀b"));
         System.out.println(clean("MyΟβιεγτFinder"));
@@ -14,11 +15,22 @@ public class SqueakyClean {
     }
 
     public static String clean(String identifier) {
-        // Eliminar espacios
-        identifier = identifier.replaceAll("\\s", "_");
+        // Reemplazar espacios con _
+        identifier = identifier.replaceAll(" ", "_");
 
-        // Eliminar caracteres control
-        identifier = identifier.replaceAll("\\\0", "CTRL");
+        // Reemplazar caracteres control
+        StringBuilder controlCharacters = new StringBuilder();
+
+        for (int i = 0; i < identifier.length(); i++) {
+            char c = identifier.charAt(i);
+            if (Character.isISOControl(c)) {
+                controlCharacters.append("CTRL");
+            } else {
+                controlCharacters.append(c);
+            }
+        }
+
+        identifier = controlCharacters.toString();
 
         // Kebab-case a camel-case
         StringBuilder camelCase = new StringBuilder(identifier);
@@ -26,7 +38,8 @@ public class SqueakyClean {
         for (int i = 0; i < camelCase.length(); i++) {
             if (camelCase.charAt(i) == '-') {
                 camelCase.deleteCharAt(i);
-                camelCase.replace(i, i + 1, String.valueOf(Character.toUpperCase(camelCase.charAt(i))));
+                camelCase.replace(i, i + 1,
+                        String.valueOf(Character.toUpperCase(camelCase.charAt(i))));
             }
         }
 
@@ -34,12 +47,14 @@ public class SqueakyClean {
 
         // Eliminar caracteres que no son letras
         StringBuilder onlyLetters = new StringBuilder();
+
         for (int i = 0; i < identifier.length(); i++) {
             char c = identifier.charAt(i);
-            if (Character.isLetter(c)) {
+            if (Character.isLetter(c) || c == '_') {
                 onlyLetters.append(c);
             }
         }
+
         identifier = onlyLetters.toString();
 
         // Eliminar letras griegas
