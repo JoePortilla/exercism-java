@@ -4,9 +4,12 @@ public class MicroBlog {
     }
 
     public static String truncate(String inputString) {
+        String truncatedString = "";
         if (inputString.length() > 5) {
-            inputString = inputString.substring(0, 5);
+            truncatedString = inputString.substring(0, 5);
+        } else {
+            truncatedString = inputString;
         }
-        return inputString;
+        return truncatedString;
     }
 }

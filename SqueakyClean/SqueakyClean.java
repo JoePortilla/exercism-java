@@ -6,7 +6,6 @@ public class SqueakyClean {
         System.out.println(clean(" myId "));
         System.out.println(clean("my\0Id"));
         System.out.println(clean("my\0\r\u007FId"));
-        System.out.println(clean("\r"));
         System.out.println(clean("à-ḃç"));
         System.out.println(clean("a1😀2😀3😀b"));
         System.out.println(clean("MyΟβιεγτFinder"));
